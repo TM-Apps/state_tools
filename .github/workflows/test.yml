@@ -1,0 +1,45 @@
+name: Flutter CI
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    name: Check lints
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Check Lints
+        run: flutter analyze
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Run tests
+        run: flutter test
+
+#  coverage:
+#    name: Code Coverage
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v4
+#      - name: Setup Flutter
+#        uses: subosito/flutter-action@v2
+#      - name: Install dependencies
+#        run: flutter pub get
+#      - name: Code Coverage
+#        run: flutter test --coverage --coverage-path lcov.info
+#      - name: Upload Coverage
+#        uses: codecov/codecov-action@v4
+#        with:
+#          token: ${{ secrets.CODECOV_TOKEN }}
+#          files: lcov.info

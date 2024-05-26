@@ -1,0 +1,16 @@
+name: state_tools_example
+version: 1.0.0+1
+publish_to: none
+
+environment:
+  sdk: '>=3.4.1 <4.0.0'
+
+dependencies:
+  state_tools:
+    path: ../
+
+  equatable: ^2.0.5
+  path_provider: ^2.0.15
+
+flutter:
+  uses-material-design: true
