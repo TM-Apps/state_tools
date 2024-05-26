@@ -32,7 +32,7 @@ jobs:
           mkdir -p $HOME/.config/dart
           echo '${{ secrets.PUB_JSON }}' >> $HOME/.config/dart/pub-credentials.json
 
-      - name: Publish State Notifier package
+      - name: Publish state_tools package
         run: |
           flutter pub get
           flutter pub publish --force
