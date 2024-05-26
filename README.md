@@ -1,4 +1,4 @@
-# State Notifier
+# State Tools
 
 A light and simple State Manager for Flutter Apps.
 
@@ -81,7 +81,7 @@ class CounterState extends PersistableStateNotifier<int> {
 
 Add `state_notifier` package on your App:
 ```yaml
-state_notifier: 1.0.0
+state_tools: 1.0.0
 ```
 
 ## License
