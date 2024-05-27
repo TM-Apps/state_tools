@@ -1,17 +1,6 @@
 name: Publish to pub.dev
 
 on:
-  workflow_call:
-    inputs:
-      environment:
-        description: if specified, the workflow is required to be run in this environment (with additional approvals)
-        required: false
-        type: string
-      working-directory:
-        description: directory with-in the repository where the package is located (if not in the repository root)
-        required: false
-        type: string
-        default: "pub.dev"
   push:
     tags:
       - '[0-9]+.[0-9]+.[0-9]+*' # tag-pattern on pub.dev: '{{version}}'
@@ -19,10 +8,11 @@ on:
 jobs:
   publish:
     name: 'Publish to pub.dev'
-    environment: ${{ inputs.environment }}
+    environment: pub.dev
     permissions:
-      id-token: write # This is required for requesting the JWT
+      id-token: write # Required for authentication using OIDC
     runs-on: ubuntu-latest
+
     steps:
       # Checkout repository
       - uses: actions/checkout@v4
@@ -37,5 +27,5 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
       # Publishing...
       - name: Publish to pub.dev
-        run: flutter pub publish -f
+        run: flutter pub publish --force
         working-directory: ${{ inputs.working-directory }}
