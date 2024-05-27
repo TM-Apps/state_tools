@@ -11,6 +11,7 @@ on:
         description: directory with-in the repository where the package is located (if not in the repository root)
         required: false
         type: string
+        default: "pub.dev"
   push:
     tags:
       - '[0-9]+.[0-9]+.[0-9]+*' # tag-pattern on pub.dev: '{{version}}'
