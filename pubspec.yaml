@@ -1,6 +1,6 @@
 name: state_tools
 description: "A light and simple State Manager for Flutter Apps."
-version: 1.0.0
+version: 1.0.1
 repository: https://github.com/TM-Apps/state_tools
 issue_tracker: https://github.com/TM-Apps/state_tools/issues
 homepage: https://github.com/TM-Apps/state_tools
