@@ -142,6 +142,14 @@ abstract class PersistableStateNotifier<State> extends StateNotifier<State> {
   /// Populates the internal state storage with the latest state.
   void recover() {
     try {
+      final stateJson = storage.read(storageToken) as Map<dynamic, dynamic>?;
+      _state = stateJson != null ? _fromJson(stateJson)! : super.state;
+    } catch (error, stackTrace) {
+      onError(error, stackTrace);
+      _state = super.state;
+    }
+
+    try {
       final stateJson = _toJson(state);
       if (stateJson != null) {
         storage.write(storageToken, stateJson).then((_) {}, onError: onError);
@@ -151,34 +159,6 @@ abstract class PersistableStateNotifier<State> extends StateNotifier<State> {
     } catch (error, stackTrace) {
       onError(error, stackTrace);
       if (error is StorageNotFound) rethrow;
-    }
-  }
-
-  bool _loadedFromStorage = false;
-
-  @override
-  State get state {
-    if (_loadedFromStorage) return _state!;
-    try {
-      final stateJson = storage.read(storageToken) as Map<dynamic, dynamic>?;
-      if (stateJson == null) {
-        _state = super.state;
-        _loadedFromStorage = true;
-        return super.state;
-      }
-      final cachedState = _fromJson(stateJson);
-      if (cachedState == null) {
-        _state = super.state;
-        _loadedFromStorage = true;
-        return super.state;
-      }
-      _state = cachedState;
-      _loadedFromStorage = true;
-      return cachedState;
-    } catch (error, stackTrace) {
-      onError(error, stackTrace);
-      _state = super.state;
-      return super.state;
     }
   }
 

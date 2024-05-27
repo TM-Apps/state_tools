@@ -81,7 +81,7 @@ class CounterState extends PersistableStateNotifier<int> {
 
 Add `state_notifier` package on your App:
 ```yaml
-state_tools: 1.0.0
+state_tools: 1.0.1
 ```
 
 ## License
