@@ -60,6 +60,26 @@ StateListener<int>(
 )
 ```
 
+Since version 1.1.0, it's possible to build and to listen more than just one state at same time, with `DoubleStateBuilder`, `DoubleStateListener`, `TripleStateBuilder` and `TripleStateListener`:
+
+```dart
+DoubleStateBuilder<int, String>(
+  notifier1: counterStateInstance,
+  notifier2: textStateInstance,
+  builder: (context, counter, text) => Text('$state : $text')
+)
+
+...
+
+TripleStateListener<int, String, bool>(
+  notifier1: counterStateInstance,
+  notifier2: textStateInstance,
+  notifier3: boolStateInstance,
+  listener: (context, counter, text, boolValue) => log('$state : $text : $boolValue'),
+  child: const Text('My TripleStateListener')
+)
+```
+
 ## Want More?
 
 If you wish, you can use the [PersistableStateNotifier](lib/state/state_notifier.dart#L117)
@@ -81,7 +101,7 @@ class CounterState extends PersistableStateNotifier<int> {
 
 Add `state_notifier` package on your App:
 ```yaml
-state_tools: 1.0.1
+state_tools: 1.1.0
 ```
 
 ## License

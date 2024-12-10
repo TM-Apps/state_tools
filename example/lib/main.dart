@@ -11,7 +11,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   StateUtils.observer = const AppStateObserver();
   PersistableStateNotifier.defaultStorage = await StateStorage.build(
-    storageDirectory: kIsWeb 
+    storageDirectory: kIsWeb
         ? StateStorage.webStorageDirectory
         : await getTemporaryDirectory(),
   );
@@ -23,16 +23,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => StateBuilder<ThemeMode>(
-    notifier: context.themeStore,
-    builder: (BuildContext context, ThemeMode themeMode) => MaterialApp(
-      title: 'Flutter - State Manager',
-      theme: lightTheme,
-      darkTheme: darkTheme,
-      themeMode: themeMode,
-      home: const MyHomePage(title: 'State Manager - Demo'),
-      debugShowCheckedModeBanner: false,
-    ),
-  );
+        notifier: context.themeStore,
+        builder: (BuildContext context, ThemeMode themeMode) => MaterialApp(
+          title: 'Flutter - State Manager',
+          theme: lightTheme,
+          darkTheme: darkTheme,
+          themeMode: themeMode,
+          home: const MyHomePage(title: 'State Manager - Demo'),
+          debugShowCheckedModeBanner: false,
+        ),
+      );
 }
 
 class MyHomePage extends StatefulWidget {
@@ -45,56 +45,55 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      title: Text(widget.title),
-      actions: [
-        StateBuilder<ThemeMode>(
-          notifier: context.themeStore,
-          builder: (context, themeMode) =>
-            IconButton(
-              onPressed: () => context.themeStore.switchTheme(),
-              icon: Icon(themeMode == ThemeMode.light ? Icons.mode_night_sharp : Icons.sunny)
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text(widget.title),
+          actions: [
+            StateBuilder<ThemeMode>(
+              notifier: context.themeStore,
+              builder: (context, themeMode) => IconButton(
+                  onPressed: () => context.themeStore.switchTheme(),
+                  icon: Icon(themeMode == ThemeMode.light
+                      ? Icons.mode_night_sharp
+                      : Icons.sunny)),
+            )
+          ],
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Text('Count Number:'),
+              StateBuilder<int>(
+                notifier: context.counterStore,
+                // buildWhen: (previous, current) => current % 2 == 0,
+                builder: (BuildContext context, int count) => Text(
+                  '$count',
+                  style: context.theme.textTheme.headlineMedium,
+                ),
+              ),
+            ],
           ),
-        )
-      ],
-    ),
-    body: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          const Text('Count Number:'),
-          StateBuilder<int>(
-            notifier: context.counterStore,
-            // buildWhen: (previous, current) => current % 2 == 0,
-            builder: (BuildContext context, int count) => Text(
-              '$count',
-              style: context.theme.textTheme.headlineMedium,
+        ),
+        floatingActionButton: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32.0),
+              child: FloatingActionButton(
+                onPressed: () => context.counterStore.decrement(),
+                tooltip: 'Decrement',
+                child: const Icon(Icons.remove),
+              ),
             ),
-          ),
-        ],
-      ),
-    ),
-    floatingActionButton: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32.0),
-          child: FloatingActionButton(
-            onPressed: () => context.counterStore.decrement(),
-            tooltip: 'Decrement',
-            child: const Icon(Icons.remove),
-          ),
+            FloatingActionButton(
+              onPressed: () => context.counterStore.increment(),
+              tooltip: 'Increment',
+              child: const Icon(Icons.add),
+            ),
+          ],
         ),
-        FloatingActionButton(
-          onPressed: () => context.counterStore.increment(),
-          tooltip: 'Increment',
-          child: const Icon(Icons.add),
-        ),
-      ],
-    ),
-  );
+      );
 }

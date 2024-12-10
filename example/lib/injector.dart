@@ -5,7 +5,7 @@ import 'theme.dart';
 
 /// Dependency Injector widget which acts as a Service Locator.
 class Injector extends InheritedWidget {
-  Injector({super.key, required Widget child}) : super(child: child);
+  Injector({super.key, required super.child});
 
   final _DependenciesGraph _deps = _DependenciesGraph();
 
