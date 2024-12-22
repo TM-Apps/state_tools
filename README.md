@@ -60,7 +60,7 @@ StateListener<int>(
 )
 ```
 
-Since version 1.1.0, it's possible to build and to listen more than just one state at same time, with `DoubleStateBuilder`, `DoubleStateListener`, `TripleStateBuilder` and `TripleStateListener`:
+Since version `1.1.0`, it's possible to build and to listen more than just one state at same time, with `DoubleStateBuilder`, `DoubleStateListener`, `TripleStateBuilder` and `TripleStateListener`:
 
 ```dart
 DoubleStateBuilder<int, String>(
@@ -101,7 +101,7 @@ class CounterState extends PersistableStateNotifier<int> {
 
 Add `state_notifier` package on your App:
 ```yaml
-state_tools: 1.1.0
+state_tools: 1.1.1
 ```
 
 ## License

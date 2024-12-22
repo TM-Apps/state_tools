@@ -1,4 +1,5 @@
 // A light and simple State Manager for Flutter Apps.
+// ignore: unnecessary_library_name
 library state_tools;
 
 export 'src/state_cipher.dart';
