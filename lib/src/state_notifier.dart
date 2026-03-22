@@ -1,12 +1,5 @@
 // ignore_for_file: avoid_catching_errors
-
-import 'dart:async';
-
-import 'package:flutter/widgets.dart';
-import 'package:meta/meta.dart';
-
-import 'state_storage.dart';
-import 'state_utils.dart';
+part of '../state_tools.dart';
 
 /// {@template state_notifier}
 /// State Notifier base class.
@@ -21,31 +14,30 @@ import 'state_utils.dart';
 /// ```
 ///
 /// {@endtemplate}
-class StateNotifier<State> extends ChangeNotifier {
-  StateNotifier(State initial) : _state = initial {
+class StateNotifier<S> extends ChangeNotifier {
+  StateNotifier(S initial) : _state = initial {
     // ignore: invalid_use_of_protected_member
-    StateUtils.observer?.onCreated(this, initial);
+    StateTools.observer?.onCreated(this, initial);
   }
 
-  State _state;
+  S _state;
 
-  State get state => _state;
+  S get state => _state;
 
   @protected
-  @mustCallSuper
-  set state(State value) {
+  set state(S value) {
     final previous = _state;
     _state = value;
     notifyListeners();
     // ignore: invalid_use_of_protected_member
-    StateUtils.observer?.onStateChanged(this, previous, value);
+    StateTools.observer?.onStateChanged(this, previous, value);
   }
 
   @override
   void dispose() {
     super.dispose();
     // ignore: invalid_use_of_protected_member
-    StateUtils.observer?.onDisposed(this);
+    StateTools.observer?.onDisposed(this);
   }
 }
 
@@ -66,31 +58,83 @@ class StateNotifier<State> extends ChangeNotifier {
 /// ```
 ///
 /// {@endtemplate}
-class ListStateNotifier<State> extends StateNotifier<List<State>> {
-  ListStateNotifier(super.initial);
+class ListStateNotifier<S> extends StateNotifier<List<S>> {
+  ListStateNotifier(super.initial)
+      : _listState = List.from(initial, growable: true) {
+    // ignore: invalid_use_of_protected_member
+    StateTools.observer?.onCreated(this, _listState);
+  }
+
+  List<S> _listState = List.empty(growable: true);
 
   /// Initialize the StateNotifier filtering the given given list parameter
   /// with the rules defined by `filter` function.
-  ListStateNotifier.filtering(List<State> list) : super(List.empty()) {
-    _state = list.where((value) => filter(value)).toList(growable: false);
+  ListStateNotifier.filtering(List<S> list) : super(List.empty()) {
+    _listState = list.where((value) => filter(value)).toList(growable: true);
   }
 
   @override
-  set state(List<State> value) {
+  List<S> get state => _listState;
+
+  @override
+  set state(List<S> value) {
     final filteredValue = value.where((item) => filter(item));
     if (filteredValue.isNotEmpty) {
-      super.state = filteredValue.toList(growable: false);
+      final previous = _listState;
+      _listState = filteredValue.toList(growable: true);
+      notifyListeners();
+      // ignore: invalid_use_of_protected_member
+      StateTools.observer?.onStateChanged(this, previous, value);
     }
   }
 
-  void add(State value) => state = List.from(state)..add(value);
-  void removeFirst(State value) => state = List.from(state)..remove(value);
-  void addAll(List<State> values) => state = List.from(state)..addAll(values);
-  void removeAll(State value) => state = List.from(state)..removeWhere((element) => element == value);
+  bool add(S value) {
+    if (filter(value)) {
+      final previous = _listState;
+      _listState.add(value);
+      notifyListeners();
+      // ignore: invalid_use_of_protected_member
+      StateTools.observer?.onStateChanged(this, previous, _listState);
+      return true;
+    }
+    return false;
+  }
+
+  bool removeFirst(S value) {
+    final previous = _listState;
+    if (_listState.remove(value)) {
+      notifyListeners();
+      // ignore: invalid_use_of_protected_member
+      StateTools.observer?.onStateChanged(this, previous, _listState);
+      return true;
+    }
+    return false;
+  }
+
+  void addAll(List<S> values) {
+    final filteredValue = values.where((item) => filter(item));
+    if (filteredValue.isNotEmpty) {
+      final previous = _listState;
+      _listState.addAll(filteredValue);
+      notifyListeners();
+      // ignore: invalid_use_of_protected_member
+      StateTools.observer?.onStateChanged(this, previous, _listState);
+    }
+  }
+
+  void removeAll(S value) {
+    final previous = _listState;
+    _listState.removeWhere((element) => element == value);
+    if (previous.length != _listState.length) {
+      notifyListeners();
+      // ignore: invalid_use_of_protected_member
+      StateTools.observer?.onStateChanged(this, previous, _listState);
+    }
+  }
 
   /// Filter the list items when a State value is set.
   @protected
-  bool filter(State value) => true;
+  bool filter(S value) => true;
 }
 
 /// {@template persistable_state_notifier}
@@ -114,7 +158,7 @@ class ListStateNotifier<State> extends StateNotifier<List<State>> {
 /// ```
 ///
 /// {@endtemplate}
-abstract class PersistableStateNotifier<State> extends StateNotifier<State> {
+abstract class PersistableStateNotifier<S> extends StateNotifier<S> {
   /// {@macro persistable_state_notifier}
   PersistableStateNotifier(super.initial, {Storage? storage}) {
     _storage = storage;
@@ -123,18 +167,10 @@ abstract class PersistableStateNotifier<State> extends StateNotifier<State> {
 
   Storage? _storage;
 
-  /// A default Storage for all [PersistableStateNotifier] instances.
-  static Storage? _defaultStorage;
-
-  /// Setter for instance of default [Storage] which will be used to
-  /// manage persisting/restoring the [StateNotifier] state if no one
-  /// is passed on constructor.
-  static set defaultStorage(Storage? storage) => _defaultStorage = storage;
-
   /// Instance of [Storage] which will be used to
   /// manage persisting/restoring the [StateNotifier] state.
   Storage get storage {
-    final storage = _storage ?? _defaultStorage;
+    final storage = _storage ?? StateTools.defaultStorage;
     if (storage == null) throw const StorageNotFound();
     return storage;
   }
@@ -148,33 +184,23 @@ abstract class PersistableStateNotifier<State> extends StateNotifier<State> {
       onError(error, stackTrace);
       _state = super.state;
     }
-
-    try {
-      final stateJson = _toJson(state);
-      if (stateJson != null) {
-        storage.write(storageToken, stateJson).then((_) {}, onError: onError);
-        // ignore: invalid_use_of_protected_member
-        StateUtils.observer?.onStateRecovered(this, state);
-      }
-    } catch (error, stackTrace) {
-      onError(error, stackTrace);
-      if (error is StorageNotFound) rethrow;
-    }
   }
 
   @override
-  set state(State value) {
+  set state(S value) {
     super.state = value;
     try {
       final stateJson = _toJson(value);
       if (stateJson != null) {
-        storage.write(storageToken, stateJson).then((_) {}, onError: onError);
+        final token = id.isEmpty && _listItemId.isNotEmpty
+            ? '$storageToken$_listItemId'
+            : storageToken;
+        storage.write(token, stateJson).then((_) {}, onError: onError);
       }
     } catch (error, stackTrace) {
       onError(error, stackTrace);
       rethrow;
     }
-    //_state = state;
   }
 
   @protected
@@ -183,15 +209,14 @@ abstract class PersistableStateNotifier<State> extends StateNotifier<State> {
     // ignore: invalid_use_of_protected_member
   }
 
-  State? _fromJson(dynamic json) {
+  S? _fromJson(dynamic json) {
     final dynamic traversedJson = _traverseRead(json);
     final castJson = _cast<Map<String, dynamic>>(traversedJson);
     return fromJson(castJson ?? <String, dynamic>{});
   }
 
-  Map<String, dynamic>? _toJson(State state) {
-    return _cast<Map<String, dynamic>>(_traverseWrite(toJson(state)).value);
-  }
+  Map<String, dynamic>? _toJson(S state) =>
+      _cast<Map<String, dynamic>>(_traverseWrite(toJson(state)).value);
 
   dynamic _traverseRead(dynamic value) {
     if (value is Map) {
@@ -311,6 +336,8 @@ abstract class PersistableStateNotifier<State> extends StateNotifier<State> {
     _seen.removeLast();
   }
 
+  String _listItemId = '';
+
   /// [id] is used to uniquely identify multiple instances
   /// of the same [PersistableStateNotifier] type.
   /// In most cases it is not necessary;
@@ -339,13 +366,113 @@ abstract class PersistableStateNotifier<State> extends StateNotifier<State> {
 
   /// Responsible for converting the `Map<String, dynamic>` representation
   /// of the StateNotifier state into a concrete instance of the StateNotifier state.
-  State? fromJson(Map<String, dynamic> json);
+  S? fromJson(Map<String, dynamic> json);
 
   /// Responsible for converting a concrete instance of the StateNotifier state
   /// into the the `Map<String, dynamic>` representation.
   ///
   /// If [toJson] returns `null`, then no state changes will be persisted.
-  Map<String, dynamic>? toJson(State state);
+  Map<String, dynamic>? toJson(S state);
+}
+
+mixin ListingSupport<S> on PersistableStateNotifier<S> {
+  /// [listId] is used to uniquely identify multiple instances
+  /// of the same [PersistableStateNotifier] type.
+  /// In most cases it is not necessary;
+  /// however, if you wish to intentionally have multiple instances
+  /// of the same [PersistableStateNotifier], then you must override [id]
+  /// and return a unique identifier for each [PersistableStateNotifier] instance
+  /// in order to keep the caches independent of each other.
+  String get listId;
+
+  /// [getListItemId] is used to generate a unique identifier for a [S]
+  /// when it is inserted on the list. This is used when [id] is not set.
+  /// So, keep the value consistent across multiple calls.
+  String getListItemId(S state);
+
+  @override
+  String get storagePrefix => '${super.storagePrefix}$listId';
+
+  int get listLength {
+    final stateStorage = storage as StateStorage;
+    final box = stateStorage._box;
+    return box.keys.where((k) => k.toString().startsWith(storagePrefix)).length;
+  }
+
+  S? get first {
+    final stateStorage = storage as StateStorage;
+    final box = stateStorage._box;
+    final keys = box.keys.where((k) => k.toString().startsWith(storagePrefix));
+    if (keys.isEmpty) return null;
+    final firstKey = keys.first;
+    if (firstKey is! String) return null;
+    final value = box.get(firstKey);
+    return value != null ? _fromJson(value) : null;
+  }
+
+  S? get last {
+    final stateStorage = storage as StateStorage;
+    final box = stateStorage._box;
+    final keys = box.keys.where((k) => k.toString().startsWith(storagePrefix));
+    if (keys.isEmpty) return null;
+    final lastKey = keys.last;
+    if (lastKey is! String) return null;
+    final value = box.get(lastKey);
+    return value != null ? _fromJson(value) : null;
+  }
+
+  Stream<List<S>> get snapshot async* {
+    final stateStorage = storage as StateStorage;
+    final box = stateStorage._box;
+
+    List<S> getItems() {
+      final items = <S>[];
+      for (final key in box.keys) {
+        if (key.toString().startsWith(storagePrefix)) {
+          final value = box.get(key);
+          if (value != null) {
+            final state = _fromJson(value);
+            if (state != null) {
+              items.add(state);
+            }
+          }
+        }
+      }
+      return items;
+    }
+
+    yield getItems();
+    await for (final _ in box.watch()) {
+      yield getItems();
+    }
+  }
+
+  @override
+  set state(S value) {
+    final itemId = id.isNotEmpty ? id : getListItemId(value);
+    assert(itemId.isNotEmpty,
+        'id or getListItemId(value) must not be empty within ListingSupport.');
+    super._listItemId = itemId;
+    super.state = value;
+  }
+
+  Future<void> remove(String id) async {
+    assert(id.isNotEmpty, 'id must not be empty');
+    final stateStorage = storage as StateStorage;
+    await stateStorage.delete('$storagePrefix$id');
+  }
+
+  @override
+  Future<void> clear() async {
+    final stateStorage = storage as StateStorage;
+    final box = stateStorage._box;
+    final keysToDelete =
+        box.keys.where((k) => k.toString().startsWith(storagePrefix)).toList();
+
+    for (final key in keysToDelete) {
+      await stateStorage.delete(key.toString());
+    }
+  }
 }
 
 /// Reports that an object could not be serialized due to cyclic references.
@@ -376,12 +503,10 @@ class StorageNotFound implements Exception {
   const StorageNotFound();
 
   @override
-  String toString() {
-    return 'Storage was accessed before it was initialized.\n'
-        'Please ensure that storage has been initialized.\n\n'
-        'For example:\n\n'
-        'PersistableStateNotifier.defaultStorage = await StateStorage.build();';
-  }
+  String toString() => 'Storage was accessed before it was initialized.\n'
+      'Please ensure that storage has been initialized.\n\n'
+      'For example:\n\n'
+      'PersistableStateNotifier.defaultStorage = await StateStorage.build();';
 }
 
 /// Reports that an object could not be serialized.

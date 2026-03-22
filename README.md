@@ -82,7 +82,7 @@ TripleStateListener<int, String, bool>(
 
 ## Want More?
 
-If you wish, you can use the [PersistableStateNotifier](lib/state/state_notifier.dart#L117)
+For persistent states, use the [PersistableStateNotifier](lib/state/state_notifier.dart#L117)
 ```dart
 class CounterState extends PersistableStateNotifier<int> {
   CounterState() : super(0);
@@ -97,11 +97,34 @@ class CounterState extends PersistableStateNotifier<int> {
 }
 ```
 
+For lists support, use the [ListingSupport](lib/state/state_notifier.dart#L117) mixin
+```dart
+class FruitsState extends PersistableStateNotifier<String> with ListingSupport {
+  FruitsState() : super('');
+
+  @override
+  String get listId => 'fruits';
+
+  @override
+  String getListItemId(String state) => state;
+
+  @override
+  String get id => state;
+
+  @override
+  Map<String, dynamic> toJson(String state) => {'value': state};
+
+  @override
+  String fromJson(Map<String, dynamic> json) => json['value'] as String;
+}
+```
+Attention:** The `ListingSupport` mixin requires the `PersistableStateNotifier` to be implemented, a unique `listId`, and `getListItemId` for new entries on the list.
+
 ## Interested?
 
-Add `state_notifier` package on your App:
+Add `state_tools` package on your App:
 ```yaml
-state_tools: 1.1.1
+state_tools: 1.2.0
 ```
 
 ## License

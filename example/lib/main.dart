@@ -1,16 +1,19 @@
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:state_tools/state_tools.dart';
 
+import 'fruits.dart';
 import 'injector.dart';
 import 'observer.dart';
 import 'theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  StateUtils.observer = const AppStateObserver();
-  PersistableStateNotifier.defaultStorage = await StateStorage.build(
+  StateTools.observer = const AppStateObserver();
+  StateTools.defaultStorage = await StateStorage.build(
     storageDirectory: kIsWeb
         ? StateStorage.webStorageDirectory
         : await getTemporaryDirectory(),
@@ -25,11 +28,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) => StateBuilder<ThemeMode>(
         notifier: context.themeStore,
         builder: (BuildContext context, ThemeMode themeMode) => MaterialApp(
-          title: 'Flutter - State Manager',
+          title: 'Flutter - State Tools',
           theme: lightTheme,
           darkTheme: darkTheme,
           themeMode: themeMode,
-          home: const MyHomePage(title: 'State Manager - Demo'),
+          home: const MyHomePage(title: 'State Tools - Demo'),
           debugShowCheckedModeBanner: false,
         ),
       );
@@ -61,39 +64,77 @@ class _MyHomePageState extends State<MyHomePage> {
             )
           ],
         ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Text('Count Number:'),
-              StateBuilder<int>(
-                notifier: context.counterStore,
-                // buildWhen: (previous, current) => current % 2 == 0,
-                builder: (BuildContext context, int count) => Text(
-                  '$count',
-                  style: context.theme.textTheme.headlineMedium,
-                ),
-              ),
-            ],
-          ),
-        ),
-        floatingActionButton: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            const SizedBox(height: 16.0),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32.0),
-              child: FloatingActionButton(
-                onPressed: () => context.counterStore.decrement(),
-                tooltip: 'Decrement',
-                child: const Icon(Icons.remove),
-              ),
-            ),
-            FloatingActionButton(
-              onPressed: () => context.counterStore.increment(),
-              tooltip: 'Increment',
-              child: const Icon(Icons.add),
-            ),
+                padding: const EdgeInsets.all(16.0),
+                child: counterSample(context)),
+            const SizedBox(height: 16.0),
+            Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: listSample(context)),
           ],
         ),
+      );
+
+  Widget counterSample(BuildContext context) => Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          FloatingActionButton(
+            onPressed: () => context.counterStore.decrement(),
+            tooltip: 'Decrement',
+            child: const Icon(Icons.remove),
+          ),
+          StateBuilder<int>(
+            notifier: context.counterStore,
+            // buildWhen: (previous, current) => current % 2 == 0,
+            builder: (BuildContext context, int count) => Text(
+              'Count Number: $count',
+              style: context.theme.textTheme.headlineMedium,
+            ),
+          ),
+          FloatingActionButton(
+            onPressed: () => context.counterStore.increment(),
+            tooltip: 'Increment',
+            child: const Icon(Icons.add),
+          ),
+        ],
+      );
+
+  Widget listSample(BuildContext context) => Column(
+        children: <Widget>[
+          StreamBuilder<List<String>>(
+            stream: context.fruitsState.snapshot,
+            builder: (context, snapshot) {
+              final fruits = snapshot.data ?? const <String>[];
+              return ListView.builder(
+                shrinkWrap: true,
+                itemCount: fruits.length,
+                itemBuilder: (context, index) => Center(
+                  child: Text(
+                    fruits[index],
+                    style: context.theme.textTheme.headlineMedium,
+                  ),
+                ),
+              );
+            },
+          ),
+          ElevatedButton(
+            onPressed: () => context.fruitsState.state =
+                fruits[Random().nextInt(fruits.length)],
+            child: const Text('Add Fruit'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final first = context.fruitsState.first;
+              if (first != null) {
+                context.fruitsState.remove(first);
+              }
+            },
+            child: const Text('Remove Fruit'),
+          ),
+        ],
       );
 }

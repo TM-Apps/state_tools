@@ -1,14 +1,4 @@
-import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:hive_ce/hive.dart';
-// ignore: implementation_imports
-import 'package:hive_ce/src/hive_impl.dart';
-import 'package:meta/meta.dart';
-import 'package:synchronized/synchronized.dart';
-
-import 'state_cipher.dart';
+part of '../state_tools.dart';
 
 /// Interface which is used to persist and retrieve state changes.
 abstract class Storage {

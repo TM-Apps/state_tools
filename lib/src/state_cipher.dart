@@ -1,6 +1,4 @@
-import 'dart:typed_data';
-
-import 'package:hive_ce/hive.dart';
+part of '../state_tools.dart';
 
 /// Abstract cipher can be implemented to customize encryption.
 abstract class StateCipher implements HiveCipher {

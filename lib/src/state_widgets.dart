@@ -1,6 +1,4 @@
-import 'package:flutter/widgets.dart';
-
-import 'state_notifier.dart';
+part of '../state_tools.dart';
 
 /// [StateBuilder] handles building a widget in response to new `states`.
 /// [StateBuilder] is analogous to [StreamBuilder] but has simplified API to
@@ -490,64 +488,57 @@ class _TripleStateListenerState<S1, S2, S3>
 /// the previous `state` and the current `state` and is responsible
 /// for returning a [bool] which determines whether to the new `state`
 /// should be emitted to the expected widget.
-typedef StateConditionFunction<State> = bool Function(
-    State? previous, State current);
+typedef StateConditionFunction<S> = bool Function(S? previous, S current);
 
 /// Signature for the `buildWhen` and `listenWhen` functions which takes
 /// the previous `state` and the current `state` and is responsible
 /// for returning a [bool] which determines whether to the new `state`
 /// should be emitted to the expected widget.
-typedef StateConditionFunction2<State1, State2> = bool Function(
-    State1? previous1, State1 current1, State2? previous2, State2 current2);
+typedef StateConditionFunction2<S1, S2> = bool Function(
+    S1? previous1, S1 current1, S2? previous2, S2 current2);
 
 /// Signature for the `buildWhen` and `listenWhen` functions which takes
 /// the previous `state` and the current `state` and is responsible
 /// for returning a [bool] which determines whether to the new `state`
 /// should be emitted to the expected widget.
-typedef StateConditionFunction3<State1, State2, State3> = bool Function(
-    State1? previous1,
-    State1 current1,
-    State2? previous2,
-    State2 current2,
-    State3? previous3,
-    State3 current3);
+typedef StateConditionFunction3<S1, S2, S3> = bool Function(S1? previous1,
+    S1 current1, S2? previous2, S2 current2, S3? previous3, S3 current3);
 
 /// Signature for the `builder` and `listener` functions which takes the
 /// [BuildContext] of the widget and the current `state` emitted from [StateNotifier].
-typedef StateHandlerFunction<State> = Widget Function(
-    BuildContext context, State state);
+typedef StateHandlerFunction<S> = Widget Function(
+    BuildContext context, S state);
 
 /// Signature for the `builder` and `listener` functions which takes the
 /// [BuildContext] of the widget and the current `state` emitted from [StateNotifier].
-typedef StateHandlerFunction2<State1, State2> = Widget Function(
-    BuildContext context, State1 state1, State2 state2);
+typedef StateHandlerFunction2<S1, S2> = Widget Function(
+    BuildContext context, S1 state1, S2 state2);
 
 /// Signature for the `builder` and `listener` functions which takes the
 /// [BuildContext] of the widget and the current `state` emitted from [StateNotifier].
-typedef StateHandlerFunction3<State1, State2, State3> = Widget Function(
-    BuildContext context, State1 state1, State2 state2, State3 state3);
+typedef StateHandlerFunction3<S1, S2, S3> = Widget Function(
+    BuildContext context, S1 state1, S2 state2, S3 state3);
 
 /// Signature for the `builder` and `listener` functions which takes the
 /// [BuildContext] of the widget and the current `state` emitted from [StateNotifier].
-typedef StateListenerFunction<State> = void Function(
-    BuildContext context, State state);
+typedef StateListenerFunction<S> = void Function(BuildContext context, S state);
 
 /// Signature for the `builder` and `listener` functions which takes the
 /// [BuildContext] of the widget and the current `state` emitted from [StateNotifier].
-typedef StateListenerFunction2<State1, State2> = void Function(
-    BuildContext context, State1 state1, State2 state2);
+typedef StateListenerFunction2<S1, S2> = void Function(
+    BuildContext context, S1 state1, S2 state2);
 
 /// Signature for the `builder` and `listener` functions which takes the
 /// [BuildContext] of the widget and the current `state` emitted from [StateNotifier].
-typedef StateListenerFunction3<State1, State2, State3> = void Function(
-    BuildContext context, State1 state1, State2 state2, State3 state3);
+typedef StateListenerFunction3<S1, S2, S3> = void Function(
+    BuildContext context, S1 state1, S2 state2, S3 state3);
 
 /// Checker for the `buildWhen` and `listenWhen` functions which takes
 /// the previous `state` and the current `state` and returns `true` if
 /// they are not equals (aka different).
-bool different<State>(State? previous, State current) => current != previous;
+bool different<S>(S? previous, S current) => current != previous;
 
 /// Checker for the `buildWhen` and `listenWhen` functions which takes
 /// the previous `state` and the current `state` and returns `true` if
 /// they are equals.
-bool equals<State>(State? previous, State current) => current == previous;
+bool equals<S>(S? previous, S current) => current == previous;

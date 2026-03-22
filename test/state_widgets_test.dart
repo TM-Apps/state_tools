@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:state_tools/src/state_notifier.dart';
-import 'package:state_tools/src/state_widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:state_tools/state_tools.dart';
 
 void main() {
   testWidgets('StateBuilder widget should notify when state changes',

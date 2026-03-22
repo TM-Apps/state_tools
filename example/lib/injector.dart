@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'counter.dart';
+import 'fruits.dart';
 import 'theme.dart';
 
 /// Dependency Injector widget which acts as a Service Locator.
@@ -24,11 +25,13 @@ class Injector extends InheritedWidget {
 class _DependenciesGraph {
   _DependenciesGraph();
 
-  CounterStore? _counterStore;
   ThemeStore? _themeStore;
+  CounterStore? _counterStore;
+  FruitsState? _fruitsState;
 
-  CounterStore get counterStore => _counterStore ??= CounterStore();
   ThemeStore get themeStore => _themeStore ??= ThemeStore();
+  CounterStore get counterStore => _counterStore ??= CounterStore();
+  FruitsState get fruitsState => _fruitsState ??= FruitsState();
 }
 
 extension InjectorExtension on BuildContext {
@@ -36,4 +39,5 @@ extension InjectorExtension on BuildContext {
 
   CounterStore get counterStore => Injector.of(this)._deps.counterStore;
   ThemeStore get themeStore => Injector.of(this)._deps.themeStore;
+  FruitsState get fruitsState => Injector.of(this)._deps.fruitsState;
 }
