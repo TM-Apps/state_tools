@@ -17,3 +17,9 @@
 
 * Improve performance of the `ListStateNotifier`
 * Introduce the `ListintgSupport` mixin for `PersistableStateNotifier`
+
+
+## 1.2.1
+
+* Deprecate `listId` on `ListingSupport` mixin
+* Fix breaking change on `PersistableStateNotifier`

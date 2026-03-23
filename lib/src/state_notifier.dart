@@ -167,6 +167,13 @@ abstract class PersistableStateNotifier<S> extends StateNotifier<S> {
 
   Storage? _storage;
 
+  /// Setter for instance of default [Storage] which will be used to
+  /// manage persisting/restoring the [StateNotifier] state if no one
+  /// is passed on constructor.
+  @Deprecated("Use `StateTools.defaultStorage` instead.")
+  static set defaultStorage(Storage? storage) =>
+      StateTools.defaultStorage = storage;
+
   /// Instance of [Storage] which will be used to
   /// manage persisting/restoring the [StateNotifier] state.
   Storage get storage {
@@ -383,15 +390,13 @@ mixin ListingSupport<S> on PersistableStateNotifier<S> {
   /// of the same [PersistableStateNotifier], then you must override [id]
   /// and return a unique identifier for each [PersistableStateNotifier] instance
   /// in order to keep the caches independent of each other.
-  String get listId;
+  @Deprecated("`listId` is not used anymore.")
+  String get listId => 'deprecated';
 
   /// [getListItemId] is used to generate a unique identifier for a [S]
   /// when it is inserted on the list. This is used when [id] is not set.
   /// So, keep the value consistent across multiple calls.
   String getListItemId(S state);
-
-  @override
-  String get storagePrefix => '${super.storagePrefix}$listId';
 
   int get listLength {
     final stateStorage = storage as StateStorage;

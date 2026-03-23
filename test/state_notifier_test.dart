@@ -288,9 +288,6 @@ class TestListingStateNotifier extends PersistableStateNotifier<int>
   TestListingStateNotifier({Storage? storage}) : super(0, storage: storage);
 
   @override
-  String get listId => 'test_list';
-
-  @override
   String getListItemId(int state) => state.toString();
 
   @override

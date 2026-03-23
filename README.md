@@ -103,9 +103,6 @@ class FruitsState extends PersistableStateNotifier<String> with ListingSupport {
   FruitsState() : super('');
 
   @override
-  String get listId => 'fruits';
-
-  @override
   String getListItemId(String state) => state;
 
   @override
@@ -118,13 +115,13 @@ class FruitsState extends PersistableStateNotifier<String> with ListingSupport {
   String fromJson(Map<String, dynamic> json) => json['value'] as String;
 }
 ```
-Attention:** The `ListingSupport` mixin requires the `PersistableStateNotifier` to be implemented, a unique `listId`, and `getListItemId` for new entries on the list.
+Attention:** The `ListingSupport` mixin requires the `PersistableStateNotifier` to be implemented and `getListItemId` for new entries on the list.
 
 ## Interested?
 
 Add `state_tools` package on your App:
 ```yaml
-state_tools: 1.2.0
+state_tools: 1.2.1
 ```
 
 ## License
