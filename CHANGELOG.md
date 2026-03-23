@@ -23,3 +23,7 @@
 
 * Deprecate `listId` on `ListingSupport` mixin
 * Fix breaking change on `PersistableStateNotifier`
+
+## 1.2.2
+
+* Add `list` getter on `PersistableStateNotifier`

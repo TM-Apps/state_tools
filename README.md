@@ -4,7 +4,7 @@ A light and simple State Manager for Flutter Apps.
 
 ## How Simple?
 
-#### 1. Create your [StateNotifier](lib/state/state_notifier.dart) class:
+#### 1. Create your [StateNotifier](lib/src/state_notifier.dart) class:
 ```dart
 class CounterState extends StateNotifier<int> {
   CounterState() : super(0);
@@ -28,13 +28,13 @@ class CounterState extends ListStateNotifier<int> {
 You can apply a filter for items on list (**not mandatory**).<br/>
 This filter will be applied every time the list value change.
 
-Also, the [ListStateNotifier](lib/state/state_notifier.dart#L69) offers prebuilt helper modifiers, like:
+Also, the [ListStateNotifier](lib/src/state_notifier.dart#L61) offers prebuilt helper modifiers, like:
 - add(item)
 - removeFist(item)
 - addAll([ list of items ])
 - removeAll([ list of items ])
 
-#### 2. On your Widget use a [StateBuilder](lib/state/state_widgets.dart) to interact with your `StateNotifier`
+#### 2. On your Widget use a [StateBuilder](lib/src/state_widgets.dart) to interact with your `StateNotifier`
 ```dart
 StateBuilder<int>(
   notifier: counterStateInstance,
@@ -82,7 +82,7 @@ TripleStateListener<int, String, bool>(
 
 ## Want More?
 
-For persistent states, use the [PersistableStateNotifier](lib/state/state_notifier.dart#L117)
+For persistent states, use the [PersistableStateNotifier](lib/src/state_notifier.dart#L161)
 ```dart
 class CounterState extends PersistableStateNotifier<int> {
   CounterState() : super(0);
@@ -97,7 +97,7 @@ class CounterState extends PersistableStateNotifier<int> {
 }
 ```
 
-For lists support, use the [ListingSupport](lib/state/state_notifier.dart#L117) mixin
+For lists support, use the [ListingSupport](lib/src/state_notifier.dart#L385) mixin
 ```dart
 class FruitsState extends PersistableStateNotifier<String> with ListingSupport {
   FruitsState() : super('');
@@ -117,11 +117,20 @@ class FruitsState extends PersistableStateNotifier<String> with ListingSupport {
 ```
 Attention:** The `ListingSupport` mixin requires the `PersistableStateNotifier` to be implemented and `getListItemId` for new entries on the list.
 
+Also, the [ListingSupport](lib/src/state_notifier.dart#L385) offers prebuilt helper modifiers, like:
+- listLength
+- first
+- last
+- list
+- snapshot
+- remove(id)
+- clear
+
 ## Interested?
 
 Add `state_tools` package on your App:
 ```yaml
-state_tools: 1.2.1
+state_tools: 1.2.2
 ```
 
 ## License

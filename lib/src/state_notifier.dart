@@ -426,6 +426,25 @@ mixin ListingSupport<S> on PersistableStateNotifier<S> {
     return value != null ? _fromJson(value) : null;
   }
 
+  List<S> get list {
+    final stateStorage = storage as StateStorage;
+    final box = stateStorage._box;
+    final keys = box.keys.where((k) => k.toString().startsWith(storagePrefix));
+    if (keys.isEmpty) return List.empty(growable: false);
+    final items = List<S>.empty(growable: true);
+    for (final key in keys) {
+      if (key is! String) continue;
+      final value = box.get(key);
+      if (value != null) {
+        final state = _fromJson(value);
+        if (state != null) {
+          items.add(state);
+        }
+      }
+    }
+    return items;
+  }
+
   Stream<List<S>> get snapshot async* {
     final stateStorage = storage as StateStorage;
     final box = stateStorage._box;

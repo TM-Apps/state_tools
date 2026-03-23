@@ -199,6 +199,21 @@ void main() {
       expect(subject.listLength, 0);
     });
 
+    test('list should return all stored items', () async {
+      final subject = TestListingStateNotifier(storage: stateStorage);
+      expect(subject.list, isEmpty);
+
+      subject.state = 1;
+      await Future.delayed(const Duration(milliseconds: 20));
+      
+      subject.state = 2;
+      await Future.delayed(const Duration(milliseconds: 20));
+      
+      final items = subject.list;
+      expect(items.length, 2);
+      expect(items, containsAll([1, 2]));
+    });
+
     test('clear should remove all items', () async {
       final subject = TestListingStateNotifier(storage: stateStorage);
 
