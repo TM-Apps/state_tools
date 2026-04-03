@@ -27,3 +27,7 @@
 ## 1.2.2
 
 * Add `list` getter on `PersistableStateNotifier`
+
+## 1.2.3
+
+* Fix: allow set empty list on `ListStateNotifier`

@@ -79,13 +79,14 @@ class ListStateNotifier<S> extends StateNotifier<List<S>> {
   @override
   set state(List<S> value) {
     final filteredValue = value.where((item) => filter(item));
-    if (filteredValue.isNotEmpty) {
-      final previous = _listState;
-      _listState = filteredValue.toList(growable: true);
-      notifyListeners();
-      // ignore: invalid_use_of_protected_member
-      StateTools.observer?.onStateChanged(this, previous, value);
+    if (value.isNotEmpty && filteredValue.isEmpty) {
+      return;
     }
+    final previous = _listState;
+    _listState = filteredValue.toList(growable: true);
+    notifyListeners();
+    // ignore: invalid_use_of_protected_member
+    StateTools.observer?.onStateChanged(this, previous, value);
   }
 
   bool add(S value) {
