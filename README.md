@@ -130,7 +130,7 @@ Also, the [ListingSupport](lib/src/state_notifier.dart#L385) offers prebuilt hel
 
 Add `state_tools` package on your App:
 ```yaml
-state_tools: 1.2.2
+state_tools: 1.2.3
 ```
 
 ## License
