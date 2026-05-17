@@ -32,7 +32,7 @@ Also, the [ListStateNotifier](lib/src/state_notifier.dart#L61) offers prebuilt h
 - add(item)
 - removeFist(item)
 - addAll([ list of items ])
-- removeAll([ list of items ])
+- clear()
 
 #### 2. On your Widget use a [StateBuilder](lib/src/state_widgets.dart) to interact with your `StateNotifier`
 ```dart
@@ -130,7 +130,7 @@ Also, the [ListingSupport](lib/src/state_notifier.dart#L385) offers prebuilt hel
 
 Add `state_tools` package on your App:
 ```yaml
-state_tools: 1.2.3
+state_tools: 1.2.4
 ```
 
 ## License

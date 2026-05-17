@@ -31,3 +31,7 @@
 ## 1.2.3
 
 * Fix: allow set empty list on `ListStateNotifier`
+
+## 1.2.4
+
+* Fix: renamed `removeAll` to `clear` on `ListStateNotifier`

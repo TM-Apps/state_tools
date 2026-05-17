@@ -123,10 +123,10 @@ class ListStateNotifier<S> extends StateNotifier<List<S>> {
     }
   }
 
-  void removeAll(S value) {
+  void clear() {
     final previous = _listState;
-    _listState.removeWhere((element) => element == value);
-    if (previous.length != _listState.length) {
+    _listState.clear();
+    if (previous.isNotEmpty) {
       notifyListeners();
       // ignore: invalid_use_of_protected_member
       StateTools.observer?.onStateChanged(this, previous, _listState);
